@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos de Iteración - Análisis Numérico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .methods-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 2rem 0;
+        }
+        
+        .method-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--secondary-color);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .method-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .method-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .content-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .explanation-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .visualization-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+        }
+        
+        .method-explanation {
+            margin-bottom: 2rem;
+        }
+        
+        .method-explanation p {
+            margin-bottom: 1rem;
+        }
+        
+        .algorithm {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        
+        .controls {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        #methodCanvas {
+            width: 100%;
+            height: 100%;
+            background-color: #fefefe;
+        }
+        
+        .results {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        
+        .iteration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .iteration-table th, .iteration-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .iteration-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .iteration-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .comparison {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .advantages, .disadvantages {
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        
+        .advantages {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .disadvantages {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content-area {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .methods-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .method-btn {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-calculator"></i> Métodos de Iteración</h1>
+            <p class="subtitle">Análisis Numérico - Bisección, Punto Fijo, Falsa Posición, Newton-Raphson y Secante</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="methods-nav">
+            <button class="method-btn active" data-method="bisection">Bisección</button>
+            <button class="method-btn" data-method="fixed-point">Punto Fijo</button>
+            <button class="method-btn" data-method="false-position">Falsa Posición</button>
+            <button class="method-btn" data-method="newton">Newton-Raphson</button>
+            <button class="method-btn" data-method="secant">Secante</button>
+        </div>
+        
+        <div class="content-area">
+            <section class="explanation-section">
+                <h2 id="method-title">Método de Bisección</h2>
+                
+                <div class="method-explanation" id="method-explanation">
+                    <p>El método de bisección es un algoritmo de búsqueda de raíces que divide repetidamente un intervalo a la mitad y luego selecciona el subintervalo que contiene la raíz.</p>
+                    
+                    <h3>Algoritmo</h3>
+                    <div class="algorithm">
+1. Elegir un intervalo [a, b] donde f(a) * f(b) < 0
+2. Calcular el punto medio c = (a + b) / 2
+3. Evaluar f(c)
+4. Si f(c) = 0 o |b - a| < tolerancia → c es la raíz
+5. Si f(a) * f(c) < 0 → la raíz está en [a, c]
+6. Si f(c) * f(b) < 0 → la raíz está en [c, b]
+7. Repetir desde el paso 2 con el nuevo intervalo
+                    </div>
+                    
+                    <h3>Ventajas</h3>
+                    <div class="advantages">
+                        <ul>
+                            <li>Convergencia garantizada si f es continua en [a, b]</li>
+                            <li>Fácil de implementar</li>
+                            <li>No requiere derivadas</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Desventajas</h3>
+                    <div class="disadvantages">
+                        <ul>
+                            <li>Convergencia lenta (convergencia lineal)</li>
+                            <li>Requiere un intervalo inicial donde la función cambie de signo</li>
+                            <li>No aprovecha información sobre la forma de la función</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="visualization-section">
+                <h2>Simulación Interactiva</h2>
+                
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="function-input">Función f(x):</label>
+                        <input type="text" id="function-input" value="x^3 - 2*x - 5">
+                        <small>Usa operadores matemáticos estándar: +, -, *, /, ^, sin(), cos(), exp(), log(), etc.</small>
+                    </div>
+                    
+                    <div class="input-group" id="interval-inputs">
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label for="a-input">Intervalo a:</label>
+                                <input type="number" id="a-input" value="2" step="0.1">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="b-input">Intervalo b:</label>
+                                <input type="number" id="b-input" value="3" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group" id="initial-guess-inputs" style="display: none;">
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label for="x0-input">Valor inicial x₀:</label>
+                                <input type="number" id="x0-input" value="2.5" step="0.1">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="x1-input" id="x1-label">Valor inicial x₁:</label>
+                                <input type="number" id="x1-input" value="3" step="0.1" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="tolerance-input">Tolerancia:</label>
+                        <input type="number" id="tolerance-input" value="0.001" step="0.0001" min="0.000001">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="max-iterations-input">Máximo de iteraciones:</label>
+                        <input type="number" id="max-iterations-input" value="10" min="1" max="50">
+                    </div>
+                    
+                    <button id="calculate-btn">Calcular</button>
+                    <button id="reset-btn">Reiniciar</button>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="methodCanvas"></canvas>
+                </div>
+                
+                <div class="results">
+                    <h3>Resultados</h3>
+                    <p id="root-result">Raíz aproximada: -</p>
+                    <p id="iterations-result">Iteraciones: -</p>
+                    <p id="error-result">Error: -</p>
+                    
+                    <h4>Iteraciones</h4>
+                    <div style="overflow-x: auto;">
+                        <table class="iteration-table" id="iteration-table">
+                            <thead>
+                                <tr>
+                                    <th>Iteración</th>
+                                    <th>a / x₀</th>
+                                    <th>b / x₁</th>
+                                    <th>c / xₙ</th>
+                                    <th>f(c)</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="iteration-table-body">
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <section class="comparison">
+            <h2>Comparación de Métodos</h2>
+            <p>Esta tabla compara las características principales de cada método:</p>
+            
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Método</th>
+                            <th>Convergencia</th>
+                            <th>Requisitos</th>
+                            <th>Velocidad</th>
+                            <th>Ventajas Principales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bisección</strong></td>
+                            <td>Garantizada (si f(a)*f(b) < 0)</td>
+                            <td>Intervalo [a,b] con cambio de signo</td>
+                            <td>Lenta (lineal)</td>
+                            <td>Robusto, simple, convergencia segura</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Punto Fijo</strong></td>
+                            <td>Si |g'(x)| < 1 cerca de la raíz</td>
+                            <td>Función de iteración g(x) adecuada</td>
+                            <td>Lineal</td>
+                            <td>Conceptualmente simple, base para otros métodos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Falsa Posición</strong></td>
+                            <td>Garantizada (si f(a)*f(b) < 0)</td>
+                            <td>Intervalo [a,b] con cambio de signo</td>
+                            <td>Lenta a lineal</td>
+                            <td>Mejor que bisección para funciones lineales</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Newton-Raphson</strong></td>
+                            <td>Rápida (cuadrática)</td>
+                            <td>Derivada f'(x) conocida, buena aproximación inicial</td>
+                            <td>Muy rápida</td>
+                            <td>Velocidad de convergencia, eficiente</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Secante</strong></td>
+                            <td>Superlineal (≈ 1.618)</td>
+                            <td>Dos aproximaciones iniciales</td>
+                            <td>Rápida</td>
+                            <td>No requiere derivada, más rápido que bisección</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="advantages" style="margin-top: 20px;">
+                <h3>Consejos para elegir un método</h3>
+                <ul>
+                    <li><strong>Bisección:</strong> Cuando no se sabe mucho sobre la función y se tiene un intervalo donde cambia de signo.</li>
+                    <li><strong>Newton-Raphson:</strong> Cuando la derivada es fácil de calcular y se tiene una buena aproximación inicial.</li>
+                    <li><strong>Secante:</strong> Cuando la derivada es difícil de calcular pero se tienen dos puntos iniciales.</li>
+                    <li><strong>Falsa Posición:</strong> Similar a bisección pero generalmente converge más rápido para funciones lineales.</li>
+                    <li><strong>Punto Fijo:</strong> Útil cuando la ecuación puede reescribirse como x = g(x) de forma natural.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Herramienta educativa para Análisis Numérico - Métodos de Iteración para encontrar raíces</p>
+            <p>© 2023 - Para uso educativo</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Estado de la aplicación
+        let currentMethod = 'bisection';
+        let chart = null;
+        let iterationData = [];
+        
+        // Configuración inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateMethodDisplay();
+            calculateRoot();
+        });
+        
+        // Configurar listeners de eventos
+        function setupEventListeners() {
+            // Botones de método
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMethod = this.dataset.method;
+                    updateMethodDisplay();
+                    calculateRoot();
+                });
+            });
+            
+            // Botón de calcular
+            document.getElementById('calculate-btn').addEventListener('click', calculateRoot);
+            
+            // Botón de reiniciar
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                // Restablecer valores por defecto según el método
+                if (currentMethod === 'bisection' || currentMethod === 'false-position') {
+                    document.getElementById('a-input').value = '2';
+                    document.getElementById('b-input').value = '3';
+                } else if (currentMethod === 'fixed-point' || currentMethod === 'newton') {
+                    document.getElementById('x0-input').value = '2.5';
+                } else if (currentMethod === 'secant') {
+                    document.getElementById('x0-input').value = '2';
+                    document.getElementById('x1-input').value = '3';
+                }
+                
+                calculateRoot();
+            });
+            
+            // Actualizar cuando cambian los inputs
+            document.getElementById('function-input').addEventListener('change', calculateRoot);
+            document.getElementById('a-input').addEventListener('change', calculateRoot);
+            document.getElementById('b-input').addEventListener('change', calculateRoot);
+            document.getElementById('x0-input').addEventListener('change', calculateRoot);
+            document.getElementById('x1-input').addEventListener('change', calculateRoot);
+            document.getElementById('tolerance-input').addEventListener('change', calculateRoot);
+            document.getElementById('max-iterations-input').addEventListener('change', calculateRoot);
+        }
+        
+        // Actualizar la interfaz según el método seleccionado
+        function updateMethodDisplay() {
+            const methodTitle = document.getElementById('method-title');
+            const methodExplanation = document.getElementById('method-explanation');
+            const intervalInputs = document.getElementById('interval-inputs');
+            const initialGuessInputs = document.getElementById('initial-guess-inputs');
+            const x1Input = document.getElementById('x1-input');
+            const x1Label = document.getElementById('x1-label');
+            
+            // Mostrar/ocultar inputs según el método
+            if (currentMethod === 'bisection' || currentMethod === 'false-position') {
+                intervalInputs.style.display = 'block';
+                initialGuessInputs.style.display = 'none';
+            } else if (currentMethod === 'fixed-point' || currentMethod === 'newton') {
+                intervalInputs.style.display = 'none';
+                initialGuessInputs.style.display = 'block';
+                x1Input.style.display = 'none';
+                x1Label.textContent = 'Valor inicial x₀:';
+            } else if (currentMethod === 'secant') {
+                intervalInputs.style.display = 'none';
+                initialGuessInputs.style.display = 'block';
+                x1Input.style.display = 'block';
+                x1Label.textContent = 'Valor inicial x₁:';
+            }
+            
+            // Actualizar título y explicación
+            let title, explanation;
+            switch(currentMethod) {
+                case 'bisection':
+                    title = 'Método de Bisección';
+                    explanation = `
+                        <p>El método de bisección es un algoritmo de búsqueda de raíces que divide repetidamente un intervalo a la mitad y luego selecciona el subintervalo que contiene la raíz.</p>
+                        
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm">
+1. Elegir un intervalo [a, b] donde f(a) * f(b) < 0
+2. Calcular el punto medio c = (a + b) / 2
+3. Evaluar f(c)
+4. Si f(c) = 0 o |b - a| < tolerancia → c es la raíz
+5. Si f(a) * f(c) < 0 → la raíz está en [a, c]
+6. Si f(c) * f(b) < 0 → la raíz está en [c, b]
+7. Repetir desde el paso 2 con el nuevo intervalo
+                        </div>
+                        
+                        <h3>Ventajas</h3>
+                        <div class="advantages">
+                            <ul>
+                                <li>Convergencia garantizada si f es continua en [a, b]</li>
+                                <li>Fácil de implementar</li>
+                                <li>No requiere derivadas</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Desventajas</h3>
+                        <div class="disadvantages">
+                            <ul>
+                                <li>Convergencia lenta (convergencia lineal)</li>
+                                <li>Requiere un intervalo inicial donde la función cambie de signo</li>
+                                <li>No aprovecha información sobre la forma de la función</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'fixed-point':
+                    title = 'Método de Punto Fijo';
+                    explanation = `
+                        <p>El método de punto fijo busca una raíz de f(x) = 0 reformulando la ecuación como x = g(x). La iteración es xₙ₊₁ = g(xₙ).</p>
+                        
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm">
+1. Reformular f(x) = 0 como x = g(x)
+2. Elegir una aproximación inicial x₀
+3. Calcular x₁ = g(x₀)
+4. Si |x₁ - x₀| < tolerancia → x₁ es la raíz
+5. Hacer x₀ = x₁ y repetir desde el paso 3
+                        </div>
+                        
+                        <h3>Ventajas</h3>
+                        <div class="advantages">
+                            <ul>
+                                <li>Conceptualmente simple</li>
+                                <li>No requiere derivadas</li>
+                                <li>Base para otros métodos más sofisticados</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Desventajas</h3>
+                        <div class="disadvantages">
+                            <ul>
+                                <li>La convergencia no está garantizada</li>
+                                <li>Requiere encontrar una función g(x) adecuada</li>
+                                <li>Convergencia lenta si |g'(x)| está cerca de 1</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'false-position':
+                    title = 'Método de Falsa Posición (Regula Falsi)</h3>';
+                    explanation = `
+                        <p>El método de falsa posición es similar al de bisección, pero en lugar de usar el punto medio, usa la intersección de la recta secante con el eje x.</p>
+                        
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm">
+1. Elegir un intervalo [a, b] donde f(a) * f(b) < 0
+2. Calcular c = a - f(a)*(b-a)/(f(b)-f(a))
+3. Evaluar f(c)
+4. Si f(c) = 0 o |f(c)| < tolerancia → c es la raíz
+5. Si f(a) * f(c) < 0 → la raíz está en [a, c]
+6. Si f(c) * f(b) < 0 → la raíz está en [c, b]
+7. Repetir desde el paso 2 con el nuevo intervalo
+                        </div>
+                        
+                        <h3>Ventajas</h3>
+                        <div class="advantages">
+                            <ul>
+                                <li>Convergencia garantizada si f es continua en [a, b]</li>
+                                <li>Generalmente más rápido que bisección</li>
+                                <li>No requiere derivadas</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Desventajas</h3>
+                        <div class="disadvantages">
+                            <ul>
+                                <li>A veces puede converger lentamente</li>
+                                <li>Requiere un intervalo inicial donde la función cambie de signo</li>
+                                <li>Puede quedar estancado en un extremo del intervalo</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'newton':
+                    title = 'Método de Newton-Raphson';
+                    explanation = `
+                        <p>El método de Newton-Raphson utiliza la derivada de la función para aproximar la raíz mediante la tangente en cada punto.</p>
+                        
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm">
+1. Elegir una aproximación inicial x₀
+2. Calcular x₁ = x₀ - f(x₀)/f'(x₀)
+3. Si |x₁ - x₀| < tolerancia → x₁ es la raíz
+4. Hacer x₀ = x₁ y repetir desde el paso 2
+                        </div>
+                        
+                        <h3>Ventajas</h3>
+                        <div class="advantages">
+                            <ul>
+                                <li>Convergencia muy rápida (cuadrática)</li>
+                                <li>Eficiente para funciones con derivada conocida</li>
+                                <li>Generalmente requiere menos iteraciones</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Desventajas</h3>
+                        <div class="disadvantages">
+                            <ul>
+                                <li>Requiere el cálculo de la derivada</li>
+                                <li>Puede divergir si la aproximación inicial no es buena</li>
+                                <li>Problemas con derivadas cercanas a cero</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'secant':
+                    title = 'Método de la Secante';
+                    explanation = `
+                        <p>El método de la secante es similar a Newton-Raphson pero aproxima la derivada usando una diferencia finita entre dos puntos.</p>
+                        
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm">
+1. Elegir dos aproximaciones iniciales x₀ y x₁
+2. Calcular x₂ = x₁ - f(x₁)*(x₁-x₀)/(f(x₁)-f(x₀))
+3. Si |x₂ - x₁| < tolerancia → x₂ es la raíz
+4. Hacer x₀ = x₁, x₁ = x₂ y repetir desde el paso 2
+                        </div>
+                        
+                        <h3>Ventajas</h3>
+                        <div class="advantages">
+                            <ul>
+                                <li>No requiere derivada (usa aproximación por diferencia finita)</li>
+                                <li>Convergencia superlineal (orden ≈ 1.618)</li>
+                                <li>Generalmente más rápido que bisección y falsa posición</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Desventajas</h3>
+                        <div class="disadvantages">
+                            <ul>
+                                <li>Requiere dos aproximaciones iniciales</li>
+                                <li>Convergencia no garantizada</li>
+                                <li>Puede fallar si f(x₁) ≈ f(x₀)</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            methodTitle.textContent = title;
+            methodExplanation.innerHTML = explanation;
+        }
+        
+        // Evaluar una función matemática
+        function evaluateFunction(funcStr, x) {
+            // Reemplazar ^ con ** para potenciación
+            let expression = funcStr.replace(/\^/g, '**');
+            
+            // Manejar funciones matemáticas comunes
+            expression = expression.replace(/sin\(/g, 'Math.sin(');
+            expression = expression.replace(/cos\(/g, 'Math.cos(');
+            expression = expression.replace(/tan\(/g, 'Math.tan(');
+            expression = expression.replace(/exp\(/g, 'Math.exp(');
+            expression = expression.replace(/log\(/g, 'Math.log(');
+            expression = expression.replace(/sqrt\(/g, 'Math.sqrt(');
+            expression = expression.replace(/abs\(/g, 'Math.abs(');
+            
+            // Reemplazar la variable x con el valor
+            expression = expression.replace(/x/g, x);
+            
+            try {
+                // Evaluar la expresión de forma segura
+                return Function('"use strict"; return (' + expression + ')')();
+            } catch (error) {
+                console.error("Error al evaluar la función:", error);
+                return NaN;
+            }
+        }
+        
+        // Calcular la derivada numérica
+        function derivative(funcStr, x) {
+            const h = 0.0001;
+            const f_xplus = evaluateFunction(funcStr, x + h);
+            const f_xminus = evaluateFunction(funcStr, x - h);
+            
+            // Derivada central de segundo orden
+            return (f_xplus - f_xminus) / (2 * h);
+        }
+        
+        // Método de Bisección
+        function bisection(funcStr, a, b, tolerance, maxIterations) {
+            iterationData = [];
+            
+            // Verificar que haya cambio de signo
+            const fa = evaluateFunction(funcStr, a);
+            const fb = evaluateFunction(funcStr, b);
+            
+            if (fa * fb >= 0) {
+                alert("La función no cambia de signo en el intervalo [a, b]. El método de bisección no puede aplicarse.");
+                return null;
+            }
+            
+            let c, fc;
+            let error = Math.abs(b - a);
+            let iteration = 0;
+            
+            while (error > tolerance && iteration < maxIterations) {
+                c = (a + b) / 2;
+                fc = evaluateFunction(funcStr, c);
+                
+                iterationData.push({
+                    iteration: iteration + 1,
+                    a: a,
+                    b: b,
+                    c: c,
+                    fc: fc,
+                    error: error
+                });
+                
+                if (fc === 0 || error < tolerance) {
+                    break;
+                }
+                
+                if (fa * fc < 0) {
+                    b = c;
+                } else {
+                    a = c;
+                }
+                
+                error = Math.abs(b - a);
+                iteration++;
+            }
+            
+            return {
+                root: c,
+                iterations: iteration + 1,
+                error: error,
+                fc: fc
+            };
+        }
+        
+        // Método de Punto Fijo
+        function fixedPoint(funcStr, x0, tolerance, maxIterations) {
+            iterationData = [];
+            
+            // Para punto fijo, necesitamos g(x) = x - f(x)
+            // O podemos usar una transformación simple
+            let x = x0;
+            let xPrev;
+            let error = tolerance + 1;
+            let iteration = 0;
+            
+            while (error > tolerance && iteration < maxIterations) {
+                xPrev = x;
+                // Para este ejemplo, usamos g(x) = x - f(x)/10
+                // En la práctica, se necesita una g(x) específica
+                x = xPrev - evaluateFunction(funcStr, xPrev) / 10;
+                error = Math.abs(x - xPrev);
+                
+                iterationData.push({
+                    iteration: iteration + 1,
+                    x0: xPrev,
+                    x1: null,
+                    c: x,
+                    fc: evaluateFunction(funcStr, x),
+                    error: error
+                });
+                
+                iteration++;
+            }
+            
+            return {
+                root: x,
+                iterations: iteration,
+                error: error,
+                fc: evaluateFunction(funcStr, x)
+            };
+        }
+        
+        // Método de Falsa Posición
+        function falsePosition(funcStr, a, b, tolerance, maxIterations) {
+            iterationData = [];
+            
+            let fa = evaluateFunction(funcStr, a);
+            let fb = evaluateFunction(funcStr, b);
+            
+            if (fa * fb >= 0) {
+                alert("La función no cambia de signo en el intervalo [a, b]. El método de falsa posición no puede aplicarse.");
+                return null;
+            }
+            
+            let c, fc;
+            let error = tolerance + 1;
+            let iteration = 0;
+            
+            while (error > tolerance && iteration < maxIterations) {
+                c = a - fa * (b - a) / (fb - fa);
+                fc = evaluateFunction(funcStr, c);
+                error = Math.abs(fc);
+                
+                iterationData.push({
+                    iteration: iteration + 1,
+                    a: a,
+                    b: b,
+                    c: c,
+                    fc: fc,
+                    error: error
+                });
+                
+                if (Math.abs(fc) < tolerance) {
+                    break;
+                }
+                
+                if (fa * fc < 0) {
+                    b = c;
+                    fb = fc;
+                } else {
+                    a = c;
+                    fa = fc;
+                }
+                
+                iteration++;
+            }
+            
+            return {
+                root: c,
+                iterations: iteration + 1,
+                error: error,
+                fc: fc
+            };
+        }
+        
+        // Método de Newton-Raphson
+        function newtonRaphson(funcStr, x0, tolerance, maxIterations) {
+            iterationData = [];
+            
+            let x = x0;
+            let xPrev;
+            let error = tolerance + 1;
+            let iteration = 0;
+            
+            while (error > tolerance && iteration < maxIterations) {
+                xPrev = x;
+                const fx = evaluateFunction(funcStr, xPrev);
+                const fpx = derivative(funcStr, xPrev);
+                
+                if (Math.abs(fpx) < 1e-10) {
+                    alert("Derivada cercana a cero. El método de Newton-Raphson no puede continuar.");
+                    return null;
+                }
+                
+                x = xPrev - fx / fpx;
+                error = Math.abs(x - xPrev);
+                
+                iterationData.push({
+                    iteration: iteration + 1,
+                    x0: xPrev,
+                    x1: null,
+                    c: x,
+                    fc: evaluateFunction(funcStr, x),
+                    error: error
+                });
+                
+                iteration++;
+            }
+            
+            return {
+                root: x,
+                iterations: iteration,
+                error: error,
+                fc: evaluateFunction(funcStr, x)
+            };
+        }
+        
+        // Método de la Secante
+        function secant(funcStr, x0, x1, tolerance, maxIterations) {
+            iterationData = [];
+            
+            let xPrev2 = x0;
+            let xPrev1 = x1;
+            let fxPrev2 = evaluateFunction(funcStr, xPrev2);
+            let fxPrev1 = evaluateFunction(funcStr, xPrev1);
+            
+            let x, fx;
+            let error = tolerance + 1;
+            let iteration = 0;
+            
+            while (error > tolerance && iteration < maxIterations) {
+                if (Math.abs(fxPrev1 - fxPrev2) < 1e-10) {
+                    alert("Diferencia entre f(x₁) y f(x₀) muy pequeña. El método de la secante no puede continuar.");
+                    return null;
+                }
+                
+                x = xPrev1 - fxPrev1 * (xPrev1 - xPrev2) / (fxPrev1 - fxPrev2);
+                fx = evaluateFunction(funcStr, x);
+                error = Math.abs(x - xPrev1);
+                
+                iterationData.push({
+                    iteration: iteration + 1,
+                    x0: xPrev2,
+                    x1: xPrev1,
+                    c: x,
+                    fc: fx,
+                    error: error
+                });
+                
+                xPrev2 = xPrev1;
+                fxPrev2 = fxPrev1;
+                xPrev1 = x;
+                fxPrev1 = fx;
+                
+                iteration++;
+            }
+            
+            return {
+                root: x,
+                iterations: iteration,
+                error: error,
+                fc: fx
+            };
+        }
+        
+        // Calcular la raíz según el método seleccionado
+        function calculateRoot() {
+            const funcStr = document.getElementById('function-input').value;
+            const tolerance = parseFloat(document.getElementById('tolerance-input').value);
+            const maxIterations = parseInt(document.getElementById('max-iterations-input').value);
+            
+            let result;
+            
+            try {
+                switch(currentMethod) {
+                    case 'bisection':
+                        const aBisection = parseFloat(document.getElementById('a-input').value);
+                        const bBisection = parseFloat(document.getElementById('b-input').value);
+                        result = bisection(funcStr, aBisection, bBisection, tolerance, maxIterations);
+                        break;
+                        
+                    case 'fixed-point':
+                        const x0Fixed = parseFloat(document.getElementById('x0-input').value);
+                        result = fixedPoint(funcStr, x0Fixed, tolerance, maxIterations);
+                        break;
+                        
+                    case 'false-position':
+                        const aFalse = parseFloat(document.getElementById('a-input').value);
+                        const bFalse = parseFloat(document.getElementById('b-input').value);
+                        result = falsePosition(funcStr, aFalse, bFalse, tolerance, maxIterations);
+                        break;
+                        
+                    case 'newton':
+                        const x0Newton = parseFloat(document.getElementById('x0-input').value);
+                        result = newtonRaphson(funcStr, x0Newton, tolerance, maxIterations);
+                        break;
+                        
+                    case 'secant':
+                        const x0Secant = parseFloat(document.getElementById('x0-input').value);
+                        const x1Secant = parseFloat(document.getElementById('x1-input').value);
+                        result = secant(funcStr, x0Secant, x1Secant, tolerance, maxIterations);
+                        break;
+                }
+                
+                if (result) {
+                    displayResults(result);
+                    plotFunctionAndMethod(funcStr, result.root);
+                    updateIterationTable();
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al calcular. Verifique la función y los parámetros ingresados.");
+            }
+        }
+        
+        // Mostrar resultados
+        function displayResults(result) {
+            document.getElementById('root-result').textContent = `Raíz aproximada: ${result.root.toFixed(6)}`;
+            document.getElementById('iterations-result').textContent = `Iteraciones: ${result.iterations}`;
+            document.getElementById('error-result').textContent = `Error: ${result.error.toFixed(8)}`;
+        }
+        
+        // Actualizar tabla de iteraciones
+        function updateIterationTable() {
+            const tableBody = document.getElementById('iteration-table-body');
+            tableBody.innerHTML = '';
+            
+            iterationData.forEach(data => {
+                const row = document.createElement('tr');
+                
+                // Columnas según el método
+                if (currentMethod === 'bisection' || currentMethod === 'false-position') {
+                    row.innerHTML = `
+                        <td>${data.iteration}</td>
+                        <td>${data.a.toFixed(6)}</td>
+                        <td>${data.b.toFixed(6)}</td>
+                        <td>${data.c.toFixed(6)}</td>
+                        <td>${data.fc.toFixed(8)}</td>
+                        <td>${data.error.toFixed(8)}</td>
+                    `;
+                } else if (currentMethod === 'secant') {
+                    row.innerHTML = `
+                        <td>${data.iteration}</td>
+                        <td>${data.x0.toFixed(6)}</td>
+                        <td>${data.x1.toFixed(6)}</td>
+                        <td>${data.c.toFixed(6)}</td>
+                        <td>${data.fc.toFixed(8)}</td>
+                        <td>${data.error.toFixed(8)}</td>
+                    `;
+                } else {
+                    // Punto fijo y Newton-Raphson
+                    row.innerHTML = `
+                        <td>${data.iteration}</td>
+                        <td>${data.x0.toFixed(6)}</td>
+                        <td>-</td>
+                        <td>${data.c.toFixed(6)}</td>
+                        <td>${data.fc.toFixed(8)}</td>
+                        <td>${data.error.toFixed(8)}</td>
+                    `;
+                }
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Graficar la función y el método
+        function plotFunctionAndMethod(funcStr, root) {
+            const canvas = document.getElementById('methodCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Determinar el rango de x para graficar
+            let xMin, xMax;
+            
+            if (currentMethod === 'bisection' || currentMethod === 'false-position') {
+                xMin = parseFloat(document.getElementById('a-input').value);
+                xMax = parseFloat(document.getElementById('b-input').value);
+            } else if (currentMethod === 'fixed-point' || currentMethod === 'newton') {
+                const x0 = parseFloat(document.getElementById('x0-input').value);
+                xMin = x0 - 2;
+                xMax = x0 + 2;
+            } else if (currentMethod === 'secant') {
+                const x0 = parseFloat(document.getElementById('x0-input').value);
+                const x1 = parseFloat(document.getElementById('x1-input').value);
+                xMin = Math.min(x0, x1) - 1;
+                xMax = Math.max(x0, x1) + 1;
+            }
+            
+            // Asegurar que la raíz esté en el gráfico
+            xMin = Math.min(xMin, root - 1);
+            xMax = Math.max(xMax, root + 1);
+            
+            // Preparar datos para la gráfica
+            const step = (xMax - xMin) / 100;
+            const xValues = [];
+            const yValues = [];
+            
+            for (let x = xMin; x <= xMax; x += step) {
+                xValues.push(x);
+                yValues.push(evaluateFunction(funcStr, x));
+            }
+            
+            // Destruir gráfico anterior si existe
+            if (chart) {
+                chart.destroy();
+            }
+            
+            // Configurar gráfico
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues.map(x => x.toFixed(2)),
+                    datasets: [
+                        {
+                            label: 'f(x)',
+                            data: yValues,
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Raíz encontrada',
+                            data: xValues.map(x => x === root ? 0 : null),
+                            pointRadius: 8,
+                            pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'f(x)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
